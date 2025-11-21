@@ -19,6 +19,8 @@ export default defineConfig({
       description: 'Aplicacion para logistica para empresas',
       theme_color: '#6A3DE8',
       display:'standalone',
+      start_url:'/logistics/',
+      scope:'/logistics/',
       icons: [
         { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
         { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' }
