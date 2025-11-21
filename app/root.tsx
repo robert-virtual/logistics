@@ -1,3 +1,5 @@
+import '@fontsource/inter';
+//import { registerSW } from "virtual:pwa-register";
 import {
   isRouteErrorResponse,
   Links,
@@ -9,6 +11,7 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import { createTheme, CssBaseline, ThemeProvider } from '@mui/material';
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -21,7 +24,15 @@ export const links: Route.LinksFunction = () => [
     rel: "stylesheet",
     href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
   },
+  {
+    rel: "manifest",
+    href: "/manifest.webmanifest",
+  },
 ];
+
+
+//registerSW({ immediate: true });
+
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -41,8 +52,41 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+const theme = createTheme({
+  palette:{
+    mode:'dark'
+  },
+  colorSchemes: {
+    light:{
+      palette:{
+        mode: 'light',
+        primary: { main: '#6A3DE8' },
+      }
+    }, 
+    dark:{
+      palette:{
+        mode: 'dark',
+        primary: { main: '#6A3DE8' },
+      }
+    } 
+  },
+components: {
+    MuiCssBaseline: {
+      styleOverrides: (theme) => ({
+        body: {
+          backgroundColor: theme.palette.background.default,
+          color: theme.palette.text.primary,
+          transition: "background 0.3s ease",
+        },
+      }),
+    },
+  },
+});
 export default function App() {
-  return <Outlet />;
+  return <ThemeProvider theme={theme}>
+  <CssBaseline/>
+    <Outlet />
+  </ThemeProvider>;
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
