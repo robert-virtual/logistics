@@ -13,8 +13,8 @@ import {
 import type { Route } from "./+types/root";
 import "./app.css";
 import { CircularProgress, createTheme, CssBaseline, ThemeProvider } from '@mui/material';
-import { Provider, useDispatch } from 'react-redux';
-import { persistor, store, type AppDispatch } from './store';
+import { Provider} from 'react-redux';
+import { persistor, store} from './store';
 import { PersistGate } from 'redux-persist/integration/react';
 import { useEffect, useState } from 'react';
 import { auth } from './config/firebase/config';
