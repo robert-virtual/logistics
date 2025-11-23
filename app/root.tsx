@@ -15,7 +15,7 @@ import "./app.css";
 import { CircularProgress, createTheme, CssBaseline, ThemeProvider } from '@mui/material';
 import { Provider} from 'react-redux';
 import { persistor, store} from './store';
-import { PersistGate } from 'redux-persist/integration/react';
+import { PersistGate } from "redux-persist/lib/integration/react";
 import { useEffect, useState } from 'react';
 import { auth } from './config/firebase/config';
 import { useAppDispatch } from './store/hooks';
