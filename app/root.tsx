@@ -7,11 +7,19 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useNavigate,
 } from "react-router";
 
 import type { Route } from "./+types/root";
 import "./app.css";
-import { createTheme, CssBaseline, ThemeProvider } from '@mui/material';
+import { CircularProgress, createTheme, CssBaseline, ThemeProvider } from '@mui/material';
+import { Provider, useDispatch } from 'react-redux';
+import { persistor, store, type AppDispatch } from './store';
+import { PersistGate } from 'redux-persist/integration/react';
+import { useEffect, useState } from 'react';
+import { auth } from './config/firebase/config';
+import { useAppDispatch } from './store/hooks';
+import { setUser } from './features/auth/authSlice';
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -45,7 +53,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
+        <Provider store={store}>
+          <PersistGate loading={typeof window !== "undefined"}  persistor={persistor}>
+              {children}
+          </PersistGate>
+        </Provider>
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -84,10 +96,38 @@ components: {
   },
 });
 export default function App() {
-  return <ThemeProvider theme={theme}>
-  <CssBaseline/>
-    <Outlet />
-  </ThemeProvider>;
+  const dispatch = useAppDispatch()
+  const navigate = useNavigate()
+  const [authReady,setAuthReady] = useState(false)
+  useEffect(()=>{
+    const unsub = auth.onAuthStateChanged((user)=>{
+      console.log("auth ready")
+      if (user) {
+        console.log("user found, redirecting to home")
+        dispatch(setUser(user))
+        navigate('home',{replace:true})
+        setAuthReady(true)
+        return
+      }
+      console.log("user not found, redirecting to login")
+      navigate('/',{replace:true})
+      setAuthReady(true)
+    })
+    return ()=> unsub()
+  },[])
+  if (!authReady) {
+    return(
+      <div className='grid place-content-center h-screen w-screen'>
+        <CircularProgress/>
+      </div>
+    )
+  }
+  return (
+      <ThemeProvider theme={theme}>
+        <CssBaseline/>
+        <Outlet />
+      </ThemeProvider>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
